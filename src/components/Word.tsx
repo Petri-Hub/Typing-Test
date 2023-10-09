@@ -1,4 +1,5 @@
-import { Typography } from '@mui/material'
+import { SxProps, Typography } from '@mui/material'
+import React from 'react'
 
 type Props = {
    word: string
@@ -9,17 +10,22 @@ type Props = {
    isOpaque: boolean
 }
 
-export function Word({ word, isHighlighted, isWrong, isOpaque, isRight }: Props) {
+const style = ({ isHighlighted, isWrong, isOpaque, isRight }: Props): SxProps => ({
+   fontSize: '17px',
+   padding: '0.25rem 0.75rem',
+   borderRadius: '6px',
+   color: isWrong ? 'error.main' : isRight ? 'success.light' : 'text.primary',
+   bgcolor: isHighlighted ? 'primary.main' : 'transparent',
+   borderWidth: '1px',
+   borderStyle: 'solid',
+   borderColor: isHighlighted ? 'primary.light' : 'transparent',
+   opacity: isOpaque ? 0.5 : 1
+})
+
+export const Word = React.forwardRef((props: Props, ref: React.ForwardedRef<HTMLParagraphElement>) => {
    return (
-      <Typography
-         fontSize={'20px'}
-         padding={'0rem 0.5rem'}
-         borderRadius={'6px'}
-         color={isWrong ? 'error.dark' : isRight ? 'success.light' : 'text.primary'}
-         bgcolor={isHighlighted ? 'primary.dark' : 'transparent'}
-         sx={{ opacity: isOpaque ? 0.5 : 1}}
-      >
-         {word}
+      <Typography component={'p'} ref={ref} sx={style(props)}>
+         {props.word}
       </Typography>
    )
-}
+})
