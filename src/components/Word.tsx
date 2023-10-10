@@ -1,5 +1,5 @@
-import { SxProps, Typography } from '@mui/material'
 import React from 'react'
+import { twMerge } from 'tailwind-merge'
 
 type Props = {
    word: string
@@ -10,22 +10,18 @@ type Props = {
    isOpaque: boolean
 }
 
-const style = ({ isHighlighted, isWrong, isOpaque, isRight }: Props): SxProps => ({
-   fontSize: '17px',
-   padding: '0.25rem 0.75rem',
-   borderRadius: '6px',
-   color: isWrong ? 'error.main' : isRight ? 'success.light' : 'text.primary',
-   bgcolor: isHighlighted ? 'primary.main' : 'transparent',
-   borderWidth: '1px',
-   borderStyle: 'solid',
-   borderColor: isHighlighted ? 'primary.light' : 'transparent',
-   opacity: isOpaque ? 0.5 : 1
-})
-
-export const Word = React.forwardRef((props: Props, ref: React.ForwardedRef<HTMLParagraphElement>) => {
+export const Word = React.forwardRef(({ word, isHighlighted, isWrong, isRight, isOpaque }: Props, ref: React.ForwardedRef<HTMLParagraphElement>) => {
    return (
-      <Typography component={'p'} ref={ref} sx={style(props)}>
-         {props.word}
-      </Typography>
+      <span
+         ref={ref}
+         className={twMerge(
+            "text-gray-400 p-2 py-1 rounded-md text-md font-medium",
+            isWrong && 'text-red-400',
+            isRight && 'text-green-600',
+            isHighlighted && 'bg-blue-300 text-white',
+            isHighlighted && isWrong && 'bg-red-400 text-white'
+         )}>
+         {word}
+      </span>
    )
 })

@@ -1,16 +1,10 @@
-import { Button, OutlinedInput, MenuItem, Stack, } from "@mui/material"
 import React, { useState, useEffect, } from "react"
 import { TextBox } from "./components/TextBox"
 import { Languages } from './resources/languages.ts'
 import { IWord } from "./interfaces/IWord.ts"
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import ReplayIcon from '@mui/icons-material/Replay';
-import Timer from "./components/Timer.tsx"
-import Slider from '@mui/material/Slider';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import VolumeMuteIcon from '@mui/icons-material/VolumeMute';
+import { FaGear, FaPenToSquare, FaVolumeLow } from 'react-icons/fa6'
 import typeSound from './assets/audio/type.mp3'
-
+import * as Slider from "@radix-ui/react-slider"
 
 function App() {
 
@@ -123,83 +117,84 @@ function App() {
    useEffect(handleReset, [language])
 
    return (
-      <Stack
-         bgcolor={'grey.800'}
-         width={'100%'}
-         height={'100%'}
-         padding={'15% 25%'}
-      >
+      <div className="w-full h-full bg-gray-100">
+         <div className="w-2/3 mx-auto pt-48">
 
-         <Stack gap={'1rem'}>
 
-            <Stack
-               direction={'row'}
-               alignItems={'center'}
-               justifyContent={'space-between'}
-            >
 
-               <Stack direction={'row'} alignItems='center' padding='0.5rem 1rem' borderRadius='8px' gap={'1rem'} width={'250px'} bgcolor={'primary.dark'}>
-                  {volume
-                     ? <VolumeUpIcon htmlColor="white" onClick={() => handleVolumeChange(0)} />
-                     : <VolumeMuteIcon htmlColor="white" onClick={() => handleVolumeChange(50)} />}
+            {/* Typing */}
+            <div className="bg-white rounded-xl p-5">
 
-                  <Slider
-                     step={10}
-                     color="primary"
-                     aria-label="Volume"
-                     value={volume}
-                     onChange={(_, newValue) => handleVolumeChange(newValue as number)}
+               {/* Top area */}
+               <div className="grid grid-cols-topbar mb-4 px-3">
+
+                  {/* Options */}
+                  <div className="flex gap-5 pr-4 border-r-2 border-solid border-gray-200">
+
+                     <FaGear className="text-gray-500 text-2xl cursor-pointer" />
+                     <FaPenToSquare className="text-gray-500 text-2xl cursor-pointer" />
+
+                  </div>
+
+                  {/* Volume */}
+                  <div className="flex gap-4 pl-4">
+
+                     <FaVolumeLow className="text-gray-500 text-2xl cursor-pointer" />
+
+                     <Slider.Root className="w-32 flex items-center cursor-pointer relative" defaultValue={[50]} max={100} step={10}>
+                        <Slider.Track className="rounded-full bg-gray-200 w-full h-[6px] block">
+                           <Slider.Range className="rounded-full bg-blue-400 h-[6px] absolute" />
+                        </Slider.Track>
+                        <Slider.Thumb className="-translate-x-1/2 outline-none -translate-y-1/2 absolute h-4 rounded-full w-4 bg-blue-500 shadow-sm" aria-label="Volume" />
+                     </Slider.Root>
+
+                  </div>
+
+                  <p className="text-green-600 text-lg whitespace-nowrap font-bold">{Math.floor((score.right + score.wrong) / 5)} WPM</p>
+
+               </div>
+
+               <TextBox
+                  typed={typed}
+                  current={current}
+                  text={text}
+                  errors={errors}
+               />
+
+               <div className="flex items-center justify-center px-2 mt-4">
+                  <input
+                     className="px-4 outline-none bg-transparent"
+                     placeholder="Digite aqui..."
+                     autoFocus
+                     disabled={finished}
+                     value={typed}
+                     onInput={(event) => handleInput(event)}
                   />
-               </Stack>
+                  {/* <Timer
+                     key={id}
+                     active={current > 0 || !!typed}
+                     initialTime={10 * 1000}
+                     onFinish={() => setFinished(true)}
+                  /> */}
+               </div>
 
-               <Select
-                  value={language.id}
-                  label="Language"
-                  onChange={(event) => handleLanguageChange(event)}
-               >
-                  {Languages.map(language => <MenuItem key={language.id} value={language.id}>{language.title}</MenuItem>)}
-               </Select>
-
-            </Stack>
-
-            <TextBox
-               typed={typed}
-               current={current}
-               text={text}
-               errors={errors}
-            />
-
-            <Stack direction={'row'} gap={'1rem'} justifyContent={'center'}>
-               <Button sx={{ border: '1px solid transparent', borderColor: 'primary.light' }} variant="contained" onClick={handleReset}><ReplayIcon /></Button>
-               <OutlinedInput
-                  color="secondary"
-                  autoFocus
-                  disabled={finished}
-                  value={typed}
-                  onInput={(event) => handleInput(event)}
-               />
-               <Timer
-                  key={id}
-                  active={current > 0 || !!typed}
-                  initialTime={10 * 1000}
-                  onFinish={() => setFinished(true)}
-               />
-            </Stack>
-         </Stack>
-
-         <div>
-            <p>Digitado Certo: {score.right}</p>
-            <p>Digitado Errado: {score.wrong}</p>
-            <p>Digitado Total: {score.right + score.wrong}</p>
-            <p>Palavras: ({current - errors.length} | {errors.length})</p>
-            <p>Palavra Atual: {current}</p>
-            <p>WPM: {Math.floor((score.right + score.wrong) / 5)}</p>
+               <div>
+                  <p>Digitado Certo: {score.right}</p>
+                  <p>Digitado Errado: {score.wrong}</p>
+                  <p>Digitado Total: {score.right + score.wrong}</p>
+                  <p>Palavras: ({current - errors.length} | {errors.length})</p>
+                  <p>Palavra Atual: {current}</p>
+                  <p>WPM: {Math.floor((score.right + score.wrong) / 5)}</p>
 
 
 
+               </div>
+
+            </div>
          </div>
+      </div >
 
-      </Stack>
+
    )
 }
 

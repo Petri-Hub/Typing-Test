@@ -1,4 +1,3 @@
-import { Box, Stack, SxProps } from "@mui/material"
 import { Word } from "./Word"
 import { IWord } from "../interfaces/IWord"
 import { useRef } from "react"
@@ -17,8 +16,8 @@ export function TextBox({ text, errors, current, typed }: Props) {
    const currentRef = useRef<HTMLParagraphElement>(null)
 
    const scrollToCurrent = () => {
-      if(!boxRef.current) return
-      if(!currentRef.current) return      
+      if (!boxRef.current) return
+      if (!currentRef.current) return
 
       const currentBounding = currentRef.current.getBoundingClientRect()
       const boxBounding = boxRef.current.getBoundingClientRect()
@@ -33,15 +32,11 @@ export function TextBox({ text, errors, current, typed }: Props) {
    scrollToCurrent()
 
    return (
-      <Box
+      <div
+         className="bg-gray-100 w-full rounded-lg p-4 max-h-28 overflow-hidden"
          ref={boxRef}
-         bgcolor={'primary.dark'}
-         maxHeight={'100px'}
-         overflow={'hidden'}
-         padding={'1rem'}
-         borderRadius={'8px'}
       >
-         <Stack direction={'row'} flexWrap={'wrap'} gap={'4px'}>
+         <div className="flex items-center gap-x-3 gap-y-2 flex-wrap">
             {text.map((word, index) => {
                const possibleRef = index === current ? { ref: currentRef } : {}
 
@@ -56,8 +51,8 @@ export function TextBox({ text, errors, current, typed }: Props) {
                   {...possibleRef}
                />
             })}
-         </Stack>
+         </div>
 
-      </Box>
+      </div>
    )
 }
