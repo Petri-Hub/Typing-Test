@@ -5,6 +5,9 @@ import { IWord } from "./interfaces/IWord.ts"
 import { FaGear, FaPenToSquare, FaVolumeLow } from 'react-icons/fa6'
 import typeSound from './assets/audio/type.mp3'
 import * as Slider from "@radix-ui/react-slider"
+import { TbBrandTypescript, TbRotateClockwise, TbBrandReact, TbSettings, TbBrandTailwind, TbBrandRadixUi, TbBrandLinkedin, TbBrandGithub, TbVolume, TbPencilPlus } from 'react-icons/tb'
+import { LanguageSelector } from "./components/LanguageSelector.tsx"
+import Timer from "./components/Timer.tsx"
 
 function App() {
 
@@ -48,8 +51,8 @@ function App() {
       return getCurrentWord() === typed.trim()
    }
 
-   const handleLanguageChange = (event: SelectChangeEvent) => {
-      const selectedLang = Languages.find(language => language.id === event.target.value)
+   const handleLanguageChange = (id: string) => {
+      const selectedLang = Languages.find(language => language.id === id)
 
       if (!selectedLang) return
 
@@ -120,10 +123,24 @@ function App() {
       <div className="w-full h-full bg-gray-100">
          <div className="w-2/3 mx-auto pt-48">
 
-
-
             {/* Typing */}
-            <div className="bg-white rounded-xl p-5">
+            <div className="relative bg-white rounded-xl p-5">
+
+               {/* Technologies and Social media */}
+               <div className="flex absolute left-0 mb-4 bottom-full justify-between w-full">
+                  <p className="absolute bottom-full mb-2 left-0 text-gray-400">built with</p>
+                  <p className="absolute bottom-full mb-2 right-0 text-gray-400">made by Petri</p>
+                  <div className="flex items-center gap-x-2">
+                     <TbBrandTypescript className="text-gray-400 w-8 h-8" />
+                     <TbBrandReact className="text-gray-400 w-8 h-8" />
+                     <TbBrandTailwind className="text-gray-400 w-8 h-8" />
+                     <TbBrandRadixUi className="text-gray-400 w-8 h-8" />
+                  </div>
+                  <div className="flex items-center gap-x-2">
+                     <TbBrandLinkedin className="text-gray-400 w-8 h-8" />
+                     <TbBrandGithub className="text-gray-400 w-8 h-8" />
+                  </div>
+               </div>
 
                {/* Top area */}
                <div className="grid grid-cols-topbar mb-4 px-3">
@@ -131,15 +148,15 @@ function App() {
                   {/* Options */}
                   <div className="flex gap-5 pr-4 border-r-2 border-solid border-gray-200">
 
-                     <FaGear className="text-gray-500 text-2xl cursor-pointer" />
-                     <FaPenToSquare className="text-gray-500 text-2xl cursor-pointer" />
+                     <TbSettings className="text-gray-500 w-8 h-8 cursor-pointer" />
+                     <TbPencilPlus className="text-gray-500 w-7 h-7 cursor-pointer" />
 
                   </div>
 
                   {/* Volume */}
-                  <div className="flex gap-4 pl-4">
+                  <div className="flex items-center gap-4 pl-4">
 
-                     <FaVolumeLow className="text-gray-500 text-2xl cursor-pointer" />
+                     <TbVolume className="text-gray-500 w-7 h-7 cursor-pointer" />
 
                      <Slider.Root className="w-32 flex items-center cursor-pointer relative" defaultValue={[50]} max={100} step={10}>
                         <Slider.Track className="rounded-full bg-gray-200 w-full h-[6px] block">
@@ -161,23 +178,39 @@ function App() {
                   errors={errors}
                />
 
-               <div className="flex items-center justify-center px-2 mt-4">
-                  <input
-                     className="px-4 outline-none bg-transparent"
-                     placeholder="Digite aqui..."
-                     autoFocus
-                     disabled={finished}
-                     value={typed}
-                     onInput={(event) => handleInput(event)}
+               <div className="items-center justify-center px-2 mt-4 grid grid-cols-footer">
+
+                  <LanguageSelector
+                     value={language}
+                     languages={Languages}
+                     onChange={handleLanguageChange}
                   />
-                  {/* <Timer
+
+                  <div className="px-4 relative">
+                     <input
+                        className=" py-1 outline-none w-full bg-transparent"
+                        placeholder="Digite aqui..."
+                        autoFocus
+                        disabled={finished}
+                        value={typed}
+                        onInput={(event) => handleInput(event)}
+                     />
+                     <div className="text-gray-300 absolute right-4 top-1/2 -translate-y-1/2">{getCurrentWord()}</div>
+                  </div>
+
+                  <TbRotateClockwise
+                     className="w-20 px-6 h-6 cursor-pointer text-blue-400 border-l-2 border-solid border-gray-200"
+                     onClick={() => handleReset()}
+                  />
+
+                  <Timer
                      key={id}
                      active={current > 0 || !!typed}
-                     initialTime={10 * 1000}
+                     initialTime={60 * 1000}
                      onFinish={() => setFinished(true)}
-                  /> */}
+                  />
                </div>
-
+               {/* 
                <div>
                   <p>Digitado Certo: {score.right}</p>
                   <p>Digitado Errado: {score.wrong}</p>
@@ -188,7 +221,7 @@ function App() {
 
 
 
-               </div>
+               </div> */}
 
             </div>
          </div>

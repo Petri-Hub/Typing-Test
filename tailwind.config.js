@@ -5,7 +5,8 @@ export default {
    ],
    theme: {
       gridTemplateColumns: {
-         'topbar': 'min-content 1fr min-content'
+         'topbar': 'min-content 1fr min-content',
+         'footer': 'min-content 1fr  min-content min-content',
       }
    }
 }

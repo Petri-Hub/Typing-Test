@@ -1,7 +1,6 @@
-import { Button } from "@mui/material"
 import { useState } from "react"
 import { useToggle } from '../hooks/useToggle'
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { TbEyeOff } from 'react-icons/tb'
 
 type Props = {
    active: boolean
@@ -20,16 +19,15 @@ export default function Timer({ active, initialTime, onFinish }: Props) {
    if (time <= 0) onFinish()
 
    return (
-      <Button
-         sx={{ border: '1px solid transparent', borderColor: 'primary.light' }}
-         variant="contained"
+      <div
+         className="whitespace-nowrap w-20 flex justify-center font-bold tracking-wide text-orange-400 pl-4 border-l-2 border-solid border-gray-200 cursor-pointer"
          onClick={() => toggleIsShown()}
       >
          {
             isShown
-               ? <div>{minutes} : {seconds.toString().padStart(2, '0')}</div>
-               : <VisibilityOffIcon />
+               ? <div>{minutes}:{seconds.toString().padStart(2, '0')}</div>
+               : <TbEyeOff className="w-6 h-6"/>
          }
-      </Button>
+      </div>
    )
 }
