@@ -7,10 +7,9 @@ type Props = {
    isHighlighted: boolean
    isWrong: boolean
    isRight: boolean
-   isOpaque: boolean
 }
 
-export const Word = React.forwardRef(({ word, isHighlighted, isWrong, isRight, isOpaque }: Props, ref: React.ForwardedRef<HTMLParagraphElement>) => {
+export const Word = React.forwardRef(({ word, isHighlighted, isWrong, isRight }: Props, ref: React.ForwardedRef<HTMLParagraphElement>) => {
    return (
       <span
          ref={ref}

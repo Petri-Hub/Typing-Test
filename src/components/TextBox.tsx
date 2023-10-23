@@ -44,7 +44,6 @@ export function TextBox({ text, errors, current, typed }: Props) {
                   key={word.id}
                   id={word.id}
                   word={word.word}
-                  isOpaque={index - 1 > current}
                   isHighlighted={current === index}
                   isRight={index < current && !errors.includes(index)}
                   isWrong={errors.includes(index) || (index === current && !word.word.startsWith(typed))}

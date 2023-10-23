@@ -2,12 +2,12 @@ import React, { useState, useEffect, } from "react"
 import { TextBox } from "./components/TextBox"
 import { Languages } from './resources/languages.ts'
 import { IWord } from "./interfaces/IWord.ts"
-import { FaGear, FaPenToSquare, FaVolumeLow } from 'react-icons/fa6'
 import typeSound from './assets/audio/type.mp3'
-import * as Slider from "@radix-ui/react-slider"
-import { TbBrandTypescript, TbRotateClockwise, TbBrandReact, TbSettings, TbBrandTailwind, TbBrandRadixUi, TbBrandLinkedin, TbBrandGithub, TbVolume, TbPencilPlus } from 'react-icons/tb'
+import { TbBrandTypescript, TbRotateClockwise, TbBrandReact, TbSettings, TbBrandTailwind, TbBrandRadixUi, TbBrandLinkedin, TbBrandGithub, TbPencilPlus } from 'react-icons/tb'
 import { LanguageSelector } from "./components/LanguageSelector.tsx"
 import Timer from "./components/Timer.tsx"
+import { DetailIcon } from "./components/DetailIcon.tsx"
+import { VolumeSlider } from "./components/VolumeSlider.tsx"
 
 function App() {
 
@@ -70,6 +70,7 @@ function App() {
       const lastKeyDifference = Math.floor((new Date().getTime() - (lastTypeStamp as number)) / 1000)
       const wasUserAFK = lastKeyDifference > 10
 
+      if(wasUserAFK) return
       /**
        * Salvar score e etc
        */
@@ -82,11 +83,11 @@ function App() {
       audio.play()
    }
 
-   const handleInput = (event: React.FormEvent<HTMLDivElement>) => {
+   const handleInput = (event: React.FormEvent<HTMLInputElement>) => {      
 
-      const inputText = (event.target as HTMLInputElement).value.trim()
+      const inputText = event.currentTarget.value.trim()
       const didPressDelete = typed.length > inputText.length
-      const didPressSpace = event.nativeEvent.data === ' '
+      const didPressSpace = (event.nativeEvent as InputEvent).data
       const didTypeSomething = !!typed.replace(/s/gi, '')
 
       playTypeSound()
@@ -131,14 +132,44 @@ function App() {
                   <p className="absolute bottom-full mb-2 left-0 text-gray-400">built with</p>
                   <p className="absolute bottom-full mb-2 right-0 text-gray-400">made by Petri</p>
                   <div className="flex items-center gap-x-2">
-                     <TbBrandTypescript className="text-gray-400 w-8 h-8" />
-                     <TbBrandReact className="text-gray-400 w-8 h-8" />
-                     <TbBrandTailwind className="text-gray-400 w-8 h-8" />
-                     <TbBrandRadixUi className="text-gray-400 w-8 h-8" />
+                     <DetailIcon
+                        title="Typescript"
+                        icon={TbBrandTypescript}
+                        className={'hover:text-[#377CC8]'}
+                        link={'https://www.typescriptlang.org/'}
+                     />
+                     <DetailIcon
+                        title="React"
+                        icon={TbBrandReact}
+                        className={'hover:text-[#61DBFB]'}
+                        link={'https://react.dev/'}
+                     />
+                     <DetailIcon
+                        title="Tailwind"
+                        icon={TbBrandTailwind}
+                        className={'hover:text-[#07B6D5]'}
+                        link={'https://tailwindcss.com/'}
+                     />
+                     <DetailIcon
+                        title="Radix UI"
+                        icon={TbBrandRadixUi}
+                        className={'hover:text-black'}
+                        link={'https://www.radix-ui.com/'}
+                     />
                   </div>
                   <div className="flex items-center gap-x-2">
-                     <TbBrandLinkedin className="text-gray-400 w-8 h-8" />
-                     <TbBrandGithub className="text-gray-400 w-8 h-8" />
+                     <DetailIcon
+                        title="Github"
+                        icon={TbBrandGithub}
+                        className={'hover:text-black'}
+                        link={'https://github.com/Petri-Hub'}
+                     />
+                     <DetailIcon
+                        title="LinkedIn"
+                        icon={TbBrandLinkedin}
+                        className={'hover:text-[#0274B3]'}
+                        link={'https://www.linkedin.com/in/fernando-petri/'}
+                     />
                   </div>
                </div>
 
@@ -156,14 +187,10 @@ function App() {
                   {/* Volume */}
                   <div className="flex items-center gap-4 pl-4">
 
-                     <TbVolume className="text-gray-500 w-7 h-7 cursor-pointer" />
-
-                     <Slider.Root className="w-32 flex items-center cursor-pointer relative" defaultValue={[50]} max={100} step={10}>
-                        <Slider.Track className="rounded-full bg-gray-200 w-full h-[6px] block">
-                           <Slider.Range className="rounded-full bg-blue-400 h-[6px] absolute" />
-                        </Slider.Track>
-                        <Slider.Thumb className="-translate-x-1/2 outline-none -translate-y-1/2 absolute h-4 rounded-full w-4 bg-blue-500 shadow-sm" aria-label="Volume" />
-                     </Slider.Root>
+                     <VolumeSlider
+                        value={volume}
+                        changeVolume={handleVolumeChange}
+                     />
 
                   </div>
 
