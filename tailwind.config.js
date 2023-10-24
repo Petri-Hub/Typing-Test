@@ -6,8 +6,10 @@ export default {
    theme: {
       extend: {
          gridTemplateColumns: {
+            'main': '1fr 3fr 1fr',
             'topbar': 'min-content 1fr min-content',
             'footer': 'min-content 1fr  min-content min-content',
+            'history': 'min-content 1fr'
          },
          animation: {
             'fade-in': '300ms fade-in forwards',
