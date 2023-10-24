@@ -83,11 +83,30 @@ function App() {
       audio.play()
    }
 
+   const getTypesAmountForChar = (char: string | null) => {
+      if(!char) return 0
+
+      const isJapaneseChar = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/.test(char)
+      const twoTypesChars = 'ãõĉŭŝĝĵáĥÆØÅάήίώόύέΓΔΘΛΞΠΣΦΨΩÖÜÇŞĞİABCDEFGHIJKLMNOPQRSTUVWXYZàèòéíóúÇ!"·$%&/()?¿@#€:'.split('')
+      const threeTypesChars = 'ÁÉÍÓÚÝÀÈÒÉÍÓÚïüàâêîôûďťň'.split('')
+      const fourTypesChars = 'ÏÜÀÂÊÎÔÛĚŠČŘŽŇŤĎŮ'.split('')
+      
+      if(isJapaneseChar) return 5
+      if(twoTypesChars.includes(char)) return 2
+      if(threeTypesChars.includes(char)) return 3
+      if(fourTypesChars.includes(char)) return 4
+
+      return 1
+   } 
+
    const handleInput = (event: React.FormEvent<HTMLInputElement>) => {      
 
-      const inputText = event.currentTarget.value.trim()
+      const inputText = event.currentTarget.value.trim()      
+      const typedChar = (event.nativeEvent as InputEvent).data
+      const typedCount = getTypesAmountForChar(typedChar)      
+
       const didPressDelete = typed.length > inputText.length
-      const didPressSpace = (event.nativeEvent as InputEvent).data
+      const didPressSpace = typedChar === ' '
       const didTypeSomething = !!typed.replace(/s/gi, '')
 
       playTypeSound()
@@ -96,7 +115,7 @@ function App() {
 
       if (!didPressDelete && !didPressSpace) {
          getCurrentWord().startsWith(inputText)
-            ? setScore({ ...score, right: score.right + 1 })
+            ? setScore({ ...score, right: score.right + typedCount })
             : setScore({ ...score, wrong: score.wrong + 1 })
       }
 
