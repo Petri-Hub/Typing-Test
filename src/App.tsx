@@ -3,7 +3,7 @@ import { TextBox } from "./components/TextBox"
 import { Languages } from './resources/languages.ts'
 import { IWord } from "./interfaces/IWord.ts"
 import typeSound from './assets/audio/type.mp3'
-import { TbBrandTypescript, TbHistory, TbRotateClockwise, TbBrandReact, TbSettings, TbBrandTailwind, TbBrandRadixUi, TbBrandLinkedin, TbBrandGithub, TbPencilPlus } from 'react-icons/tb'
+import { TbBrandTypescript, TbMedal2, TbHistory, TbRotateClockwise, TbBrandReact, TbSettings, TbBrandTailwind, TbBrandRadixUi, TbBrandLinkedin, TbBrandGithub, TbPencilPlus } from 'react-icons/tb'
 import { LanguageSelector } from "./components/LanguageSelector.tsx"
 import Timer from "./components/Timer.tsx"
 import { DetailIcon } from "./components/DetailIcon.tsx"
@@ -12,6 +12,8 @@ import { AlertInfo } from "./components/AlertInfo.tsx"
 import { AFKModal } from "./components/AFKModal.tsx"
 import { IHistory } from "./interfaces/IHistory.ts"
 import { HistoryItem } from "./components/HistoryItem.tsx"
+import { twMerge } from "tailwind-merge"
+import { FinishModal } from "./components/FinishModal.tsx"
 
 function App() {
 
@@ -32,7 +34,8 @@ function App() {
    const [lastTypeStamp, setLastTypeStamp] = useState<null | number>(null)
    const [score, setScore] = useState({ wrong: 0, right: 0 })
 
-   const [isAFKMessageShown, setIsAFKMessageShown] = useState<boolean>(false)
+   const [isAFKModalShown, setIsAFKModalShown] = useState<boolean>(false)
+   const [isFinishModalShown, setIsFinishModalShown] = useState<boolean>(false)
 
    const handleReset = () => {
       setFinished(false)
@@ -63,9 +66,25 @@ function App() {
       setLanguage(selectedLang)
    }
 
+   const getBestAttempt = () => {
+      return history.reduce((best, current) => {
+         const currentWPM = Math.floor((current.right + current.wrong) / 5)
+         const bestWPM = Math.floor((best.right + best.wrong) / 5)
+
+         if (!best) return current
+         if (currentWPM < bestWPM) return best
+
+         return current
+      },)
+   }
+
    const handleVolumeChange = (newVolume: number) => {
-      localStorage.setItem('volume', newVolume.toString())
       setVolume(newVolume)
+      playTypeSound()
+   }
+
+   const getLastAttempt = () => {
+      return history[0]
    }
 
    const handleFinish = () => {
@@ -74,8 +93,8 @@ function App() {
       const lastKeyDifference = Math.floor((new Date().getTime() - (lastTypeStamp as number)) / 1000)
       const wasUserAFK = lastKeyDifference > 10
 
-      if (wasUserAFK){
-         setIsAFKMessageShown(true)
+      if (wasUserAFK) {
+         setIsAFKModalShown(true)
          return
       }
 
@@ -89,7 +108,8 @@ function App() {
          precision: parseFloat(((score.right + score.wrong) / score.right).toFixed(2)),
          id: crypto.randomUUID()
       }, ...history])
-      
+
+      setIsFinishModalShown(true)
    }
 
    const playTypeSound = () => {
@@ -109,8 +129,8 @@ function App() {
 
       if (isJapaneseChar) return 5
       if (twoTypesChars.includes(char)) return 2
-      if (threeTypesChars.includes(char)) return 3
       if (fourTypesChars.includes(char)) return 4
+      if (threeTypesChars.includes(char)) return 3
 
       return 1
    }
@@ -156,16 +176,21 @@ function App() {
       localStorage.setItem('history', JSON.stringify(history))
    }
 
+   const saveVolume = () => {
+      localStorage.setItem('volume', volume.toString())
+   }
 
    useEffect(handleFinish, [finished])
    useEffect(handleReset, [language])
    useEffect(saveHistory, [history])
+   useEffect(saveVolume, [volume])
 
    return (
       <div className="w-full h-full bg-gray-100">
          <div className="w-4/5 grid grid-cols-main gap-6 mx-auto pt-48">
 
-            {isAFKMessageShown && <AFKModal onConfirm={() => setIsAFKMessageShown(false)}/>}
+            {isAFKModalShown && <AFKModal onConfirm={() => setIsAFKModalShown(false)} />}
+            {isFinishModalShown && <FinishModal attempt={getLastAttempt()} onConfirm={() => setIsFinishModalShown(false)} />}
 
             {/* History */}
             <div className="rounded-xl w-full h-min bg-white p-5">
@@ -174,13 +199,13 @@ function App() {
                      <p className="text-gray-500 font-medium text-lg">Histórico ({history.length})</p>
                      <p onClick={() => setHistory([])} className="text-gray-400 text-sm cursor-pointer">Limpar histórico</p>
                   </div>
-                  <TbHistory className="w-12 text-blue-400 h-12"/>
+                  <TbHistory className="w-12 text-blue-400 h-12" />
                </div>
                <div className="flex flex-col gap-y-3">
                   {
                      history.length
                         ? history.map(history => <HistoryItem key={history.id} {...history} />)
-                        : <AlertInfo message="Sem histórico" background="bg-orange-100" color="text-orange-800"/>
+                        : <AlertInfo message="Sem histórico" background="bg-orange-100" color="text-orange-800" />
                   }
                </div>
             </div>
@@ -294,11 +319,31 @@ function App() {
                   <Timer
                      key={id}
                      active={current > 0 || !!typed}
-                     initialTime={60 * 1000}
+                     initialTime={20 * 1000}
                      onFinish={() => setFinished(true)}
                   />
                </div>
             </div>
+
+            {/* Record */}
+            <div className="rounded-xl bg-white h-min p-5 relative">
+               <p className="font-medium text-gray-500 text-lg">Maior Record</p>
+               <p className="text-gray-400 text-sm">{getBestAttempt() ? new Date(getBestAttempt().date).toLocaleDateString('en-GB') : 'Sem nenhum record'}</p>
+               <TbMedal2 className={twMerge("absolute right-5 top-5 w-12 h-12", history.length ? 'text-yellow-500' : 'text-gray-300')} />
+               {
+                  history.length
+                     ? <div className="mt-6 flex items-end justify-between">
+                        <div>
+                           <p className="text-green-600 text-sm">{getBestAttempt().right} acertos</p>
+                           <p className="text-red-600 text-sm">{getBestAttempt().wrong} erros</p>
+                        </div>
+                        <div className="text-green-600 text-2xl font-bold">{Math.floor((getBestAttempt().right + getBestAttempt().wrong) / 5)} PPM</div>
+                     </div>
+                     : <AlertInfo className="mt-3" message="Jogue uma vez!" background="bg-orange-100" color="text-orange-800" />
+               }
+            </div>
+
+
          </div>
       </div >
 

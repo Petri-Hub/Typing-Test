@@ -16,7 +16,7 @@ export function TextBox({ text, errors, current, typed }: Props) {
    const currentRef = useRef<HTMLParagraphElement>(null)
 
    const scrollToCurrent = () => {
-      if (!boxRef.current) return
+      if (!boxRef.current) return 
       if (!currentRef.current) return
 
       const currentBounding = currentRef.current.getBoundingClientRect()
@@ -28,6 +28,7 @@ export function TextBox({ text, errors, current, typed }: Props) {
          top: scrollTop,
       })
    }
+   
 
    scrollToCurrent()
 
